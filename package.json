@@ -5,8 +5,8 @@
   "license": "MIT",
   "author": "Oz",
   "bin": {
-    "tryoz": "./bin/tryoz.js",
-    "oz": "./bin/tryoz.js"
+    "tryoz": "bin/tryoz.js",
+    "oz": "bin/tryoz.js"
   },
   "files": [
     "bin",
