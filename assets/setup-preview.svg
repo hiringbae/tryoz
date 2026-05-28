@@ -1,0 +1,23 @@
+<svg width="980" height="560" viewBox="0 0 980 560" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Oz setup checkbox prompt preview</title>
+  <desc id="desc">A terminal preview showing selectable coding agents</desc>
+  <rect width="980" height="560" rx="24" fill="#101418"/>
+  <rect x="24" y="24" width="932" height="512" rx="18" fill="#171D22" stroke="#313B44"/>
+  <circle cx="58" cy="56" r="7" fill="#E5484D"/>
+  <circle cx="82" cy="56" r="7" fill="#F7C948"/>
+  <circle cx="106" cy="56" r="7" fill="#42B883"/>
+  <text x="56" y="112" fill="#E7F2F4" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="26" font-weight="700">Oz MCP setup</text>
+  <text x="56" y="166" fill="#D2DEE2" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="22">Select coding agents to configure:</text>
+  <text x="72" y="226" fill="#E7F2F4" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="21">[x] Codex CLI / Codex IDE</text>
+  <text x="620" y="226" fill="#72D39A" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="21">detected</text>
+  <text x="72" y="270" fill="#E7F2F4" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="21">[x] Claude Code</text>
+  <text x="620" y="270" fill="#72D39A" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="21">detected</text>
+  <text x="72" y="314" fill="#A9B8BD" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="21">[ ] Cursor</text>
+  <text x="620" y="314" fill="#7F9299" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="21">not detected</text>
+  <text x="72" y="358" fill="#E7F2F4" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="21">[x] VS Code / GitHub Copilot</text>
+  <text x="620" y="358" fill="#72D39A" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="21">detected</text>
+  <text x="72" y="402" fill="#A9B8BD" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="21">[ ] Grok Build</text>
+  <text x="620" y="402" fill="#7F9299" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="21">Claude-compatible</text>
+  <rect x="56" y="452" width="868" height="48" rx="10" fill="#0D1418" stroke="#2A3940"/>
+  <text x="76" y="484" fill="#B8C7CB" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="18">Global (Recommended)  |  API key: oz-********  |  tools/list OK</text>
+</svg>

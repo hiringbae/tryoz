@@ -1,0 +1,25 @@
+name: Agent support request
+description: Request or improve setup support for a coding agent.
+title: "[Agent]: "
+labels: ["agent-support"]
+body:
+  - type: input
+    id: agent
+    attributes:
+      label: Agent name
+    validations:
+      required: true
+  - type: input
+    id: docs
+    attributes:
+      label: Official MCP or extension docs URL
+  - type: textarea
+    id: config
+    attributes:
+      label: Expected config format
+      description: Paste a redacted example if available.
+      render: json
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes

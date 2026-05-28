@@ -1,0 +1,53 @@
+name: Bug report
+description: Report a problem with the Tryoz CLI.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What happened?
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Tryoz version
+      placeholder: "npx tryoz --version"
+    validations:
+      required: true
+  - type: dropdown
+    id: agent
+    attributes:
+      label: Agent
+      options:
+        - Codex
+        - Claude Code
+        - Cursor
+        - VS Code / GitHub Copilot
+        - Cline
+        - Windsurf
+        - OpenCode
+        - GitHub Copilot CLI
+        - GitHub Copilot Coding Agent
+        - Grok Build
+        - Gemini CLI
+        - Other
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction steps
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: Remove API keys and private paths before pasting logs.
+      render: text

@@ -1,0 +1,19 @@
+<svg width="1200" height="420" viewBox="0 0 1200 420" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Oz MCP setup</title>
+  <desc id="desc">Version-aware documentation for coding agents</desc>
+  <rect width="1200" height="420" rx="28" fill="#0B1114"/>
+  <rect x="32" y="32" width="1136" height="356" rx="22" fill="#10191D" stroke="#24414A"/>
+  <text x="88" y="155" fill="#E7F2F4" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="84" font-weight="700">Oz</text>
+  <text x="90" y="215" fill="#9BCAD4" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="30" font-weight="600">Version-aware documentation for coding agents</text>
+  <text x="90" y="270" fill="#B8C7CB" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="23">npx tryoz setup</text>
+  <g transform="translate(710 92)">
+    <rect width="370" height="226" rx="16" fill="#071013" stroke="#30525C"/>
+    <circle cx="31" cy="31" r="7" fill="#42B883"/>
+    <circle cx="55" cy="31" r="7" fill="#F7C948"/>
+    <circle cx="79" cy="31" r="7" fill="#E5484D"/>
+    <text x="30" y="82" fill="#DDECEF" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="18">[x] Codex CLI</text>
+    <text x="30" y="116" fill="#DDECEF" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="18">[x] Claude Code</text>
+    <text x="30" y="150" fill="#89A8AE" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="18">[ ] Cursor</text>
+    <text x="30" y="184" fill="#DDECEF" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="18">tools/list OK</text>
+  </g>
+</svg>

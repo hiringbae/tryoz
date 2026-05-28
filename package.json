@@ -1,7 +1,21 @@
 {
   "name": "tryoz",
-  "version": "0.1.0",
+  "version": "0.2.1",
   "description": "One-line Oz MCP setup for coding agents.",
+  "keywords": [
+    "oz",
+    "mcp",
+    "mcp-server",
+    "llm",
+    "coding-agents",
+    "documentation",
+    "codex",
+    "claude-code",
+    "cursor",
+    "cline",
+    "windsurf",
+    "opencode"
+  ],
   "license": "MIT",
   "author": "Oz",
   "bin": {
@@ -9,8 +23,11 @@
     "oz": "bin/tryoz.js"
   },
   "files": [
+    "assets",
     "bin",
+    "docs",
     "lib",
+    "templates",
     "README.md",
     "LICENSE"
   ],
@@ -18,7 +35,13 @@
     "node": ">=18"
   },
   "scripts": {
-    "test": "node --test"
+    "test": "node --test",
+    "pack:check": "npm pack --dry-run"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^7.10.1",
+    "picocolors": "^1.1.1",
+    "toml": "^3.0.0"
   },
   "repository": {
     "type": "git",
