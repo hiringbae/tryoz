@@ -80,7 +80,7 @@ test("validateAPIKey requires oz prefix", () => {
   assert.throws(() => validateAPIKey("bad"), /must start with oz-/);
 });
 
-test("codex global setup writes MCP and skill without mutating shell rc files", () => {
+test("codex global setup writes MCP, auth header, and skill without mutating shell rc files", () => {
   withTempDirs(({ home, cwd }) => {
     const changes = setupClients(["codex"], {
       apiKey: "oz-test",
@@ -90,9 +90,11 @@ test("codex global setup writes MCP and skill without mutating shell rc files", 
       scope: "global"
     });
 
-    const config = fs.readFileSync(path.join(home, ".codex", "config.toml"), "utf8");
+    const configPath = path.join(home, ".codex", "config.toml");
+    const config = fs.readFileSync(configPath, "utf8");
     assert.match(config, /\[mcp_servers\.oz\]/);
-    assert.match(config, /bearer_token_env_var = "OZ_API_KEY"/);
+    assert.match(config, /http_headers = \{ Authorization = "Bearer oz-test" \}/);
+    assert.equal(validateConfigTarget({ client: "codex", label: "Codex config", path: configPath, type: "toml" }).status, "ok");
 
     const skill = fs.readFileSync(path.join(home, ".codex", "skills", "oz", "SKILL.md"), "utf8");
     assert.match(skill, /Use Oz first/);
@@ -100,7 +102,7 @@ test("codex global setup writes MCP and skill without mutating shell rc files", 
 
     assert.equal(fs.existsSync(path.join(home, ".zshrc")), false);
     assert.equal(fs.existsSync(path.join(home, ".bashrc")), false);
-    assert.equal(changes.some((item) => item.client === "codex-env" && item.message.includes("export OZ_API_KEY='oz-test'")), true);
+    assert.equal(changes.some((item) => item.client === "codex-env"), false);
     assert.equal(fs.existsSync(path.join(cwd, "AGENTS.md")), false);
   });
 });

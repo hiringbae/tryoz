@@ -11,9 +11,5 @@ Global setup writes:
 
 Project setup additionally writes an Oz policy block to `AGENTS.md`.
 
-Codex uses `OZ_API_KEY` through `bearer_token_env_var`, so export the key before
-launching Codex:
-
-```bash
-export OZ_API_KEY='oz-your-key'
-```
+Setup stores the Oz API key in the Codex MCP `Authorization` header, so Codex can
+use Oz without a separate `OZ_API_KEY` export.
