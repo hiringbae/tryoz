@@ -1,11 +1,12 @@
 "use strict";
 
 const assert = require("node:assert/strict");
+const childProcess = require("node:child_process");
 const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
 const test = require("node:test");
-const { fallbackHint, hasExplicitClients, parseArgs, selectedClients, validateAPIKey, validateConfigTarget } = require("../lib/cli");
+const { fallbackHint, formatSelectedClients, hasExplicitClients, parseArgs, selectedClients, validateAPIKey, validateConfigTarget } = require("../lib/cli");
 const { removeClients, setupClients } = require("../lib/clients");
 
 function withTempDirs(fn) {
@@ -47,6 +48,25 @@ test("parseArgs supports common target aliases", () => {
   assert.equal(parsed.grok, true);
 });
 
+test("logout command alias runs in dry-run JSON mode", () => {
+  withTempDirs(({ home, cwd }) => {
+    const bin = path.join(__dirname, "..", "bin", "tryoz.js");
+    const env = { ...process.env, TRYOZ_TEST_HOME: home, PATH: "" };
+    const logout = JSON.parse(childProcess.execFileSync(process.execPath, [
+      bin,
+      "logout",
+      "--codex",
+      "--global",
+      "--dry-run",
+      "--json",
+      "--no-telemetry"
+    ], { cwd, env, encoding: "utf8" }));
+    assert.equal(logout.status, "ok");
+    assert.equal(logout.command, "remove");
+    assert.deepEqual(logout.clients, ["codex"]);
+  });
+});
+
 test("package metadata includes public docs and bundled templates", () => {
   const pkg = require("../package.json");
   assert.equal(pkg.name, "tryoz");
@@ -64,6 +84,28 @@ test("selectedClients maps dashed flags back to client IDs", () => {
   assert.deepEqual(clients, ["copilot-agent"]);
 });
 
+test("setup defaults to all clients when no target flag is provided", () => {
+  const clients = selectedClients({}, {}, { defaultAll: true });
+  assert.deepEqual(clients, [
+    "codex",
+    "claude",
+    "cursor",
+    "vscode",
+    "cline",
+    "windsurf",
+    "opencode",
+    "copilot",
+    "copilot-agent",
+    "grok",
+    "gemini"
+  ]);
+});
+
+test("explicit setup target overrides default all", () => {
+  const clients = selectedClients({ claude: true }, {}, { defaultAll: true });
+  assert.deepEqual(clients, ["claude"]);
+});
+
 test("hasExplicitClients recognizes dashed flags", () => {
   assert.equal(hasExplicitClients({ copilot_agent: true }), true);
   assert.equal(hasExplicitClients({}), false);
@@ -73,6 +115,24 @@ test("fallback hints match agent-specific UX copy", () => {
   assert.equal(fallbackHint("grok"), "Claude-compatible");
   assert.equal(fallbackHint("copilot-agent"), "project config");
   assert.equal(fallbackHint("cursor"), "not detected");
+});
+
+test("selected client summary stays compact for interactive prompts", () => {
+  assert.equal(formatSelectedClients(["codex"]), "Codex CLI / Codex IDE");
+  assert.equal(formatSelectedClients(["codex", "claude", "cursor", "vscode"]), "4 agents selected");
+  assert.equal(formatSelectedClients([
+    "codex",
+    "claude",
+    "cursor",
+    "vscode",
+    "cline",
+    "windsurf",
+    "opencode",
+    "copilot",
+    "copilot-agent",
+    "grok",
+    "gemini"
+  ]), "all 11 agents");
 });
 
 test("validateAPIKey requires oz prefix", () => {

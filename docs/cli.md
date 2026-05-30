@@ -5,6 +5,7 @@
 ```bash
 npx tryoz setup
 npx tryoz remove
+npx tryoz logout
 npx tryoz doctor
 npx tryoz list-agents
 npx tryoz detect
@@ -17,6 +18,8 @@ npx tryoz --version
 ```bash
 npx tryoz setup [targets] [scope] [options]
 ```
+
+When no target flags are provided, setup selects all supported agents by default.
 
 Targets:
 
@@ -58,7 +61,10 @@ Options:
 
 ```bash
 npx tryoz remove --codex --claude --global
+npx tryoz logout --all --global
 ```
+
+`logout` is an alias for `remove`.
 
 Remove deletes only Oz-owned MCP entries, Oz skills, and marked Oz policy blocks.
 It does not remove unrelated user config.

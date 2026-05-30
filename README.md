@@ -49,7 +49,7 @@ Agent: answers from retrieved docs instead of guessing.
 The setup wizard:
 
 1. Detects installed coding agents.
-2. Shows a checkbox list so you can select one or many agents.
+2. Shows a checkbox list with all supported agents selected by default.
 3. Asks for scope: Global (recommended) or Project.
 4. Asks for an Oz API key. Keys must start with `oz-`.
 5. Shows the exact files and commands that will change.
@@ -57,7 +57,7 @@ The setup wizard:
 7. Installs the Oz skill or the best available rule fallback.
 8. Verifies the MCP server with `tools/list`.
 
-No login flow. No broad hidden patching. Only selected agents are changed.
+No login flow. No broad hidden patching. Deselect any agents you do not want to change.
 
 ## Supported Agents
 
@@ -79,6 +79,7 @@ No login flow. No broad hidden patching. Only selected agents are changed.
 
 ```bash
 # Interactive setup
+oz setup
 npx tryoz setup
 
 # Non-interactive setup
@@ -86,7 +87,9 @@ npx tryoz setup --codex --claude --global --api-key oz-your-key
 npx tryoz setup --all --project --api-key oz-your-key
 
 # Remove Oz-owned config only
+oz logout
 npx tryoz remove
+npx tryoz logout
 npx tryoz remove --codex --claude --global
 
 # Verify the remote MCP endpoint

@@ -6,10 +6,10 @@ Run the interactive setup:
 npx tryoz setup
 ```
 
-The wizard detects supported coding agents, lets you select one or more, asks for
-Global or Project scope, asks for an `oz-` API key, previews all changes, writes
-the selected configs, installs the Oz skill or policy, and verifies the remote
-MCP server with `tools/list`.
+The wizard detects supported coding agents, starts with all supported agents
+selected, asks for Global or Project scope, asks for an `oz-` API key, previews
+all changes, writes the selected configs, installs the Oz skill or policy, and
+verifies the remote MCP server with `tools/list`.
 
 ## Recommended Path
 
