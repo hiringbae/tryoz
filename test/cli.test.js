@@ -8,6 +8,8 @@ const path = require("node:path");
 const test = require("node:test");
 const { fallbackHint, formatSelectedClients, hasExplicitClients, parseArgs, selectedClients, validateAPIKey, validateConfigTarget } = require("../lib/cli");
 const { detectClientDetails, detectClients, removeClients, setupClients } = require("../lib/clients");
+const { testMCP } = require("../lib/mcp");
+const pkg = require("../package.json");
 
 function withTempDirs(fn) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "tryoz-test-"));
@@ -168,7 +170,9 @@ test("codex global setup writes MCP, auth header, and skill without mutating she
     const configPath = path.join(home, ".codex", "config.toml");
     const config = fs.readFileSync(configPath, "utf8");
     assert.match(config, /\[mcp_servers\.oz\]/);
-    assert.match(config, /http_headers = \{ Authorization = "Bearer oz-test" \}/);
+    assert.match(config, /Authorization = "Bearer oz-test"/);
+    assert.match(config, /"X-Oz-Client" = "codex"/);
+    assert.match(config, new RegExp(`"X-Oz-SDK-Version" = "${pkg.version.replaceAll(".", "\\.")}"`));
     assert.equal(validateConfigTarget({ client: "codex", label: "Codex config", path: configPath, type: "toml" }).status, "ok");
 
     const skill = fs.readFileSync(path.join(home, ".codex", "skills", "oz", "SKILL.md"), "utf8");
@@ -179,6 +183,40 @@ test("codex global setup writes MCP, auth header, and skill without mutating she
     assert.equal(fs.existsSync(path.join(home, ".bashrc")), false);
     assert.equal(changes.some((item) => item.client === "codex-env"), false);
     assert.equal(fs.existsSync(path.join(cwd, "AGENTS.md")), false);
+  });
+});
+
+test("codex setup upgrades existing inline header config", () => {
+  withTempDirs(({ home, cwd }) => {
+    const configPath = path.join(home, ".codex", "config.toml");
+    fs.mkdirSync(path.dirname(configPath), { recursive: true });
+    fs.writeFileSync(configPath, [
+      "[mcp_servers.other]",
+      'url = "https://example.com/mcp"',
+      "",
+      "[mcp_servers.oz]",
+      'url = "https://tryoz.dev/mcp"',
+      'http_headers = { Authorization = "Bearer oz-old" }',
+      "enabled = true",
+      ""
+    ].join("\n"));
+
+    setupClients(["codex"], {
+      apiKey: "oz-new",
+      cwd,
+      dryRun: false,
+      endpoint: "https://tryoz.dev/mcp",
+      scope: "global"
+    });
+
+    const config = fs.readFileSync(configPath, "utf8");
+    assert.match(config, /\[mcp_servers\.other\]/);
+    assert.doesNotMatch(config, /oz-old/);
+    assert.doesNotMatch(config, /http_headers = \{/);
+    assert.match(config, /\[mcp_servers\.oz\.http_headers\]/);
+    assert.match(config, /Authorization = "Bearer oz-new"/);
+    assert.match(config, /"X-Oz-Client" = "codex"/);
+    assert.equal(validateConfigTarget({ client: "codex", label: "Codex config", path: configPath, type: "toml" }).status, "ok");
   });
 });
 
@@ -198,12 +236,45 @@ test("cursor project setup writes only cursor project files and removes them", (
     const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
     assert.equal(config.mcpServers.oz.url, "https://tryoz.dev/mcp");
     assert.equal(config.mcpServers.oz.headers.Authorization, "Bearer oz-test");
+    assert.equal(config.mcpServers.oz.headers["X-Oz-Client"], "cursor");
+    assert.equal(config.mcpServers.oz.headers["X-Oz-SDK-Version"], pkg.version);
     assert.match(fs.readFileSync(rulePath, "utf8"), /resolve-library-id/);
 
     removeClients(["cursor"], context);
     assert.equal(fs.existsSync(rulePath), false);
     const after = JSON.parse(fs.readFileSync(configPath, "utf8"));
     assert.equal(after.mcpServers.oz, undefined);
+  });
+});
+
+test("cursor setup upgrades existing auth-only config", () => {
+  withTempDirs(({ cwd }) => {
+    const configPath = path.join(cwd, ".cursor", "mcp.json");
+    fs.mkdirSync(path.dirname(configPath), { recursive: true });
+    fs.writeFileSync(configPath, JSON.stringify({
+      mcpServers: {
+        oz: {
+          type: "streamableHttp",
+          url: "https://tryoz.dev/mcp",
+          headers: {
+            Authorization: "Bearer oz-old"
+          }
+        }
+      }
+    }, null, 2));
+
+    setupClients(["cursor"], {
+      apiKey: "oz-new",
+      cwd,
+      dryRun: false,
+      endpoint: "https://tryoz.dev/mcp",
+      scope: "project"
+    });
+
+    const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
+    assert.equal(config.mcpServers.oz.headers.Authorization, "Bearer oz-new");
+    assert.equal(config.mcpServers.oz.headers["X-Oz-Client"], "cursor");
+    assert.equal(config.mcpServers.oz.headers["X-Oz-SDK-Version"], pkg.version);
   });
 });
 
@@ -219,6 +290,7 @@ test("claude project setup installs project skill and policy", () => {
 
     const mcp = JSON.parse(fs.readFileSync(path.join(cwd, ".mcp.json"), "utf8"));
     assert.equal(mcp.mcpServers.oz.url, "https://tryoz.dev/mcp");
+    assert.equal(mcp.mcpServers.oz.headers["X-Oz-Client"], "claude");
     assert.match(fs.readFileSync(path.join(cwd, ".claude", "skills", "oz", "SKILL.md"), "utf8"), /Oz Documentation Workflow/);
     assert.match(fs.readFileSync(path.join(cwd, "CLAUDE.md"), "utf8"), /Oz Documentation Policy/);
   });
@@ -237,4 +309,30 @@ test("validateConfigTarget validates JSON and TOML files", () => {
     fs.writeFileSync(jsonPath, '{bad');
     assert.equal(validateConfigTarget({ client: "test", label: "JSON", path: jsonPath, type: "json" }).status, "fail");
   });
+});
+
+test("MCP probe sends Oz client attribution headers", async () => {
+  const originalFetch = global.fetch;
+  let seenHeaders = {};
+  global.fetch = async (_url, options) => {
+    seenHeaders = options.headers || {};
+    return {
+      ok: true,
+      text: async () => JSON.stringify({
+        result: {
+          tools: [
+            { name: "get-library-docs" },
+            { name: "resolve-library-id" }
+          ]
+        }
+      })
+    };
+  };
+  try {
+    await testMCP("https://tryoz.dev/mcp", "oz-test");
+  } finally {
+    global.fetch = originalFetch;
+  }
+  assert.equal(seenHeaders["x-oz-client"], "tryoz-cli");
+  assert.equal(seenHeaders["x-oz-sdk-version"], pkg.version);
 });
